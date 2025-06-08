@@ -457,14 +457,15 @@
                             element.appendChild(cursor);
                             currentIndex++;
                             
-                            // Tốc độ đánh máy
-                            const delay = text[currentIndex - 1] === ' ' ? 150 : 100;
+                            // Tốc độ đánh máy đều và vừa phải
+                            const delay = 35; // Tốc độ cố định cho mọi ký tự
+                            
                             setTimeout(type, delay);
                         } else {
                             setTimeout(() => {
                                 cursor.remove();
                                 resolve();
-                            }, 500);
+                            }, 150); // Thời gian ngắn giữa các dòng
                         }
                     }
 
@@ -490,9 +491,10 @@
                         letter.classList.add('show');
                         letterContent.classList.add('show');
                         
-                        // Đánh máy từng dòng tuần tự
+                        // Đánh máy từng dòng tuần tự với độ trễ ngắn
                         for (const text of typingTexts) {
                             await typeText(text);
+                            await new Promise(resolve => setTimeout(resolve, 100)); // Độ trễ ngắn giữa các đoạn
                         }
                     }, 1000);
                 } else {
