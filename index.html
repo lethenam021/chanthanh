@@ -29,6 +29,8 @@
             width: 100%;
             max-width: 600px;
             perspective: 1000px;
+            position: relative;
+            z-index: 1;
         }
 
         .envelope {
@@ -176,14 +178,14 @@
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 1;
+            z-index: -1;
         }
 
         .floating-heart {
             position: absolute;
             font-size: 20px;
             color: #ff6b6b;
-            animation: floatUp 4s ease-in-out infinite;
+            animation: floatDown 4s linear infinite;
             opacity: 0;
             text-shadow: 0 0 5px rgba(255, 107, 107, 0.3);
         }
@@ -274,33 +276,19 @@
             transform: scale(1.1);
         }
 
-        @keyframes floatUp {
+        @keyframes floatDown {
             0% {
-                transform: translate(var(--random-x-start), 100vh) scale(0);
+                transform: translateY(-20px);
                 opacity: 0;
             }
-            2% {
+            10% {
                 opacity: 0.8;
-                transform: translate(var(--random-x-1), 85vh) scale(0.2);
             }
-            20% {
-                transform: translate(var(--random-x-2), 60vh) scale(0.4);
-                opacity: 0.9;
-            }
-            40% {
-                transform: translate(var(--random-x-3), 40vh) scale(0.6);
-                opacity: 0.9;
-            }
-            60% {
-                transform: translate(var(--random-x-4), 20vh) scale(0.8);
-                opacity: 0.9;
-            }
-            80% {
-                transform: translate(var(--random-x-5), 0vh) scale(0.9);
+            90% {
                 opacity: 0.8;
             }
             100% {
-                transform: translate(var(--random-x-end), -20vh) scale(1);
+                transform: translateY(120vh);
                 opacity: 0;
             }
         }
@@ -557,54 +545,47 @@
                 ];
                 
                 const isMobile = window.innerWidth <= 480;
-                const heartsPerBatch = isMobile ? 1 : 2;
+                const heartsPerBatch = isMobile ? 2 : 4;
                 
                 for (let i = 0; i < heartsPerBatch; i++) {
                     const heart = document.createElement('i');
                     heart.className = 'fas fa-heart floating-heart';
                     
-                    // Vị trí ngẫu nhiên hoàn toàn theo chiều ngang
-                    const randomX = Math.random() * window.innerWidth;
+                    // Tạo vị trí ngẫu nhiên trên toàn màn hình
+                    const padding = 20; // Khoảng cách từ mép màn hình
+                    const randomX = padding + Math.random() * (window.innerWidth - 2 * padding);
                     heart.style.left = randomX + 'px';
                     
                     // Kích thước ngẫu nhiên
                     const size = isMobile ? 
-                        12 + Math.random() * 8 : 
-                        15 + Math.random() * 15;
+                        10 + Math.random() * 10 : // 10px đến 20px trên mobile
+                        15 + Math.random() * 20;  // 15px đến 35px trên desktop
                     heart.style.fontSize = size + 'px';
                     
                     // Thời gian animation ngẫu nhiên
-                    const duration = 2 + Math.random() * 1;
+                    const duration = 2 + Math.random() * 2; // 2-4 giây
                     heart.style.animationDuration = duration + 's';
                     
                     // Độ trong suốt và màu sắc ngẫu nhiên
-                    heart.style.opacity = 0.6 + Math.random() * 0.4;
+                    heart.style.opacity = 0.5 + Math.random() * 0.5;
                     heart.style.color = colors[Math.floor(Math.random() * colors.length)];
-                    
-                    // Đường đi ngẫu nhiên
-                    const maxOffset = window.innerWidth * 0.3;
-                    const randomOffset = (Math.random() - 0.5) * maxOffset;
-                    heart.style.setProperty('--random-x-start', `${randomOffset * 0.2}px`);
-                    heart.style.setProperty('--random-x-1', `${-randomOffset * 0.5}px`);
-                    heart.style.setProperty('--random-x-2', `${randomOffset * 0.8}px`);
-                    heart.style.setProperty('--random-x-3', `${-randomOffset * 0.3}px`);
-                    heart.style.setProperty('--random-x-4', `${randomOffset * 0.6}px`);
-                    heart.style.setProperty('--random-x-5', `${-randomOffset * 0.4}px`);
-                    heart.style.setProperty('--random-x-end', `${randomOffset}px`);
                     
                     heartsContainer.appendChild(heart);
                     heart.addEventListener('animationend', () => heart.remove());
                 }
             }
 
-            // Tạo tim thường xuyên hơn và ngẫu nhiên hơn
+            // Tạo tim thường xuyên hơn
             const createHeartsInterval = () => {
                 const minInterval = window.innerWidth <= 480 ? 150 : 100;
                 return setInterval(() => {
                     createFloatingHeart();
-                    // Thêm xác suất tạo tim phụ
-                    if (Math.random() < 0.3) {
+                    // Thêm xác suất tạo tim phụ để tạo cảm giác tự nhiên
+                    if (Math.random() < 0.4) {
                         setTimeout(createFloatingHeart, Math.random() * 100);
+                    }
+                    if (Math.random() < 0.2) {
+                        setTimeout(createFloatingHeart, Math.random() * 200);
                     }
                 }, minInterval);
             };
